@@ -42,10 +42,8 @@ static void http_get_task(void *pvParameters)
     };
     struct addrinfo *res;
     struct in_addr *addr;
-    int s, r,j;
-    int _rn_flag = 5;
-    char recv_buf[60];
-    char body_buf[1024];
+    int s, r;
+    char recv_buf[1024];
     while(1) {
         int err = getaddrinfo(WEB_SERVER, "80", &hints, &res);
 
@@ -100,40 +98,16 @@ static void http_get_task(void *pvParameters)
             continue;
         }
         ESP_LOGI(TAG, "... set socket receiving timeout success");
-        
+
         /* Read HTTP response */
         do {
             bzero(recv_buf, sizeof(recv_buf));
             r = read(s, recv_buf, sizeof(recv_buf)-1);
-            for(int i = 0; i < r; i++) 
-            {
-               // putchar(recv_buf[i]);
-               if(_rn_flag != 0xff)   //判断\r后时否紧跟\n或者\r\n后是否紧接\r，不是说明后面还是response
-                 {   
-                   if(((_rn_flag==1)&&(recv_buf[i]!=0x0A))||((_rn_flag==2)&&(recv_buf[i]!=0x0D)))
-                    {  
-                      _rn_flag = 5; 
-                   } else{;}
-               if(recv_buf[i] == 0x0D)
-                 {
-                    if(_rn_flag==2) {_rn_flag = 3;} else{;} // \r\n后紧跟\r
-                    if(_rn_flag==5) {_rn_flag = 1;} else{;} //第一次接收到\r
-                 }else{;}
-               if((recv_buf[i] == 0x0A)&&((_rn_flag==1)||(_rn_flag==3)))
-                 {
-                    if(_rn_flag==3) {_rn_flag = 0xff;}  // \r\n\r后紧跟\n，说明接下来是body
-                    else{_rn_flag = 2;}     //\r后紧跟\n
-                 }else{;}
-               }
-               else{
-                body_buf[j++]=recv_buf[i];
-                putchar(recv_buf[i]);
-               }  
-             }
+            for(int i = 0; i < r; i++) {
+                putchar(recv_buf[i]);     
+            }
             } while(r > 0);
-            j = 0;    //保证进入读取body时，从数组0开始
-            _rn_flag = 5;
-            cJSON *pJsonRoot = cJSON_Parse(body_buf);
+         cJSON *pJsonRoot = cJSON_Parse(recv_buf);
                 if (pJsonRoot !=NULL)
                     {
                         ESP_LOGI(TAG,".....JSON数据收到\r\n");
