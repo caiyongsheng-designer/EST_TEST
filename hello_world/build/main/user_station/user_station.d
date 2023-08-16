@@ -79,9 +79,9 @@ user_station/user_station.o: \
  C:/msys32/home/admin/esp/components/spi_flash/include/esp_partition.h \
  C:/msys32/home/admin/esp/components/spi_flash/include/esp_spi_flash.h \
  C:/msys32/home/admin/esp/components/spi_flash/include/spi_flash.h \
+ C:/8266/EST_TEST/hello_world/main/user_station/include/user_station.h \
  C:/msys32/home/admin/esp/components/lwip/lwip/src/include/lwip/err.h \
- C:/msys32/home/admin/esp/components/lwip/lwip/src/include/lwip/sys.h \
- C:/8266/EST_TEST/hello_world/main/user_station/include/user_station.h
+ C:/msys32/home/admin/esp/components/lwip/lwip/src/include/lwip/sys.h
 
 C:/msys32/home/admin/esp/components/freertos/include/freertos/FreeRTOS.h:
 
@@ -241,9 +241,9 @@ C:/msys32/home/admin/esp/components/spi_flash/include/esp_spi_flash.h:
 
 C:/msys32/home/admin/esp/components/spi_flash/include/spi_flash.h:
 
+C:/8266/EST_TEST/hello_world/main/user_station/include/user_station.h:
+
 C:/msys32/home/admin/esp/components/lwip/lwip/src/include/lwip/err.h:
 
 C:/msys32/home/admin/esp/components/lwip/lwip/src/include/lwip/sys.h:
-
-C:/8266/EST_TEST/hello_world/main/user_station/include/user_station.h:
 /c/8266/EST_TEST/hello_world/main/user_station/user_station.c:

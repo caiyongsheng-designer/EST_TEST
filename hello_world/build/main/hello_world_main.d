@@ -70,7 +70,8 @@ hello_world_main.o: C:/8266/EST_TEST/hello_world/main/hello_world_main.c \
  C:/msys32/home/admin/esp/components/nvs_flash/include/nvs.h \
  C:/msys32/home/admin/esp/components/spi_flash/include/esp_partition.h \
  C:/msys32/home/admin/esp/components/spi_flash/include/esp_spi_flash.h \
- C:/8266/EST_TEST/hello_world/main/user_http_request/include/user_http_request.h
+ C:/8266/EST_TEST/hello_world/main/user_http_request/include/user_http_request.h \
+ C:/8266/EST_TEST/hello_world/main/user_uart/include/user_uart.h
 
 C:/msys32/home/admin/esp/components/freertos/include/freertos/FreeRTOS.h:
 
@@ -215,4 +216,6 @@ C:/msys32/home/admin/esp/components/spi_flash/include/esp_partition.h:
 C:/msys32/home/admin/esp/components/spi_flash/include/esp_spi_flash.h:
 
 C:/8266/EST_TEST/hello_world/main/user_http_request/include/user_http_request.h:
+
+C:/8266/EST_TEST/hello_world/main/user_uart/include/user_uart.h:
 /c/8266/EST_TEST/hello_world/main/./hello_world_main.c:

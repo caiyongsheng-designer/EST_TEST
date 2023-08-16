@@ -68,6 +68,9 @@ user_http_request/user_http_request.o: \
  C:/msys32/home/admin/esp/components/esp_event/include/esp_event_base.h \
  C:/msys32/home/admin/esp/components/esp_event/include/esp_event_legacy.h \
  C:/msys32/home/admin/esp/components/tcpip_adapter/include/tcpip_adapter.h \
+ C:/msys32/home/admin/esp/components/freertos/include/freertos/event_groups.h \
+ C:/msys32/home/admin/esp/components/freertos/include/freertos/timers.h \
+ C:/msys32/home/admin/esp/components/freertos/include/freertos/task.h \
  C:/msys32/home/admin/esp/examples/common_components/protocol_examples_common/include/protocol_examples_common.h \
  C:/msys32/home/admin/esp/components/nvs_flash/include/nvs.h \
  C:/msys32/home/admin/esp/components/nvs_flash/include/nvs_flash.h \
@@ -228,6 +231,12 @@ C:/msys32/home/admin/esp/components/esp_event/include/esp_event_base.h:
 C:/msys32/home/admin/esp/components/esp_event/include/esp_event_legacy.h:
 
 C:/msys32/home/admin/esp/components/tcpip_adapter/include/tcpip_adapter.h:
+
+C:/msys32/home/admin/esp/components/freertos/include/freertos/event_groups.h:
+
+C:/msys32/home/admin/esp/components/freertos/include/freertos/timers.h:
+
+C:/msys32/home/admin/esp/components/freertos/include/freertos/task.h:
 
 C:/msys32/home/admin/esp/examples/common_components/protocol_examples_common/include/protocol_examples_common.h:
 
