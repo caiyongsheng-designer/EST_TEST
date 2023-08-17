@@ -72,9 +72,13 @@ static void uart_event_task(void *pvParameters)
                         switch (dtmp[2])
                         {
                         case 1:
+                        if((wifi_state_inquiry())&&(User_http_netif_init_state_quire()))
+                        {
                              ESP_LOGI(TAG,"user_report_Y");
                              User_Weather_Report();
                              bzero(dtmp, RD_BUF_SIZE);
+                        }else{;}
+                            
                             break;
                         case 2:
                             

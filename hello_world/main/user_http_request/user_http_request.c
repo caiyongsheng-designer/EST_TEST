@@ -33,7 +33,7 @@ static const char *REQUEST = "GET " WEB_URL " HTTP/1.0\r\n"
     "Host: "WEB_SERVER"\r\n"
     "User-Agent: esp-idf/1.0 esp32\r\n"
     "\r\n";
-
+static int http_netif_init_flag=0;
 static void http_get_task(void *pvParameters)
 {
     const struct addrinfo hints = {
@@ -48,21 +48,14 @@ static void http_get_task(void *pvParameters)
     uint16_t j=0; 
     char recv_buf[1024];
     while(1) {
-         xEventGroupWaitBits(s_http_get_weather_report,
-            1,
-            pdTRUE,
-            pdFALSE,
-            portMAX_DELAY);
-       xEventGroupSetBits(s_http_get_weather_report, 0);
-
+        http_netif_init_flag = 1;
         int err = getaddrinfo(WEB_SERVER, "80", &hints, &res);
-
         if(err != 0 || res == NULL) {
             ESP_LOGE(TAG, "DNS lookup failed err=%d res=%p", err, res);
             vTaskDelay(1000 / portTICK_PERIOD_MS);
+            esp_restart();
             continue;
         }
-
         /* Code to print the resolved IP.
 
            Note: inet_ntoa is non-reentrant, look at ipaddr_ntoa_r for "real" code */
@@ -114,6 +107,7 @@ static void http_get_task(void *pvParameters)
         do {
             bzero(recv_buf, sizeof(recv_buf));
             r = read(s, recv_buf, sizeof(recv_buf)-1);
+             ESP_LOGI(TAG, "r=%d",r);
             for(int i = 0; i < r; i++) {
                   // putchar(recv_buf[i]);
                    if (_rn != 0xFF)  {
@@ -131,7 +125,7 @@ static void http_get_task(void *pvParameters)
                    else {
                     bodybuf[j++] = recv_buf[i];
                     } 
-                }           
+                }          
             } while(r > 0);
             bodybuf[j] = 0;
             ESP_LOGI(TAG, ((const char *)bodybuf));
@@ -158,18 +152,29 @@ static void http_get_task(void *pvParameters)
                                 if(temper && wear) 
                                 {
                                     printf("5AA5temperature=%s\r\nwear=%s\r\n",temper->valuestring,wear->valuestring);
-                                }else{printf("Get Report Error");}
-                              }else{printf("Get Report Error");}
-                           }else{printf("Get Report Error");}
-                        }else{printf("Get Report Error");}
-                    }else{printf("Get Report Error");}
+                                }else{
+                                    ESP_LOGI(TAG,"Get Report Error_temp");
+                                }
+                              }else{
+                                ESP_LOGI(TAG,"Get Report Error_now");
+                                }
+                           }else{
+                            ESP_LOGI(TAG,"Get Report Error_arry");
+                           }
+                        }else{
+                            ESP_LOGI(TAG,"Get Report Error_result");
+                            }
+                    }else{
+                        ESP_LOGI(TAG,"Get Report Error_ALL");
+                        }
         ESP_LOGI(TAG, "... done reading from socket. Last read return=%d errno=%d\r\n", r, errno);
         close(s);
-       
-   /*    for(int countdown = 10; countdown >= 0; countdown--) {
-            ESP_LOGI(TAG, "%d... ", countdown);
-            vTaskDelay(1000 / portTICK_PERIOD_MS);
-        }*/
+         xEventGroupWaitBits(s_http_get_weather_report,
+            1,
+            pdTRUE,
+            pdFALSE,
+            portMAX_DELAY);
+       xEventGroupSetBits(s_http_get_weather_report, 0);
         ESP_LOGI(TAG, "Starting again!");
     }
 }
@@ -184,4 +189,9 @@ void user_http_requser_init()
 void User_Weather_Report()
 {
   xEventGroupSetBits(s_http_get_weather_report, 1);
+}
+uint8_t User_http_netif_init_state_quire()
+{
+
+  return http_netif_init_flag;
 }
