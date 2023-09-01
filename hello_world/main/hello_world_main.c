@@ -16,6 +16,8 @@
 #include "nvs_flash.h"
 #include "user_http_request.h"
 #include "user_uart.h"
+#include "user_mqtt_tcp.h"
+#include "utils_3Y.h"
 void app_main()
 {   
     ESP_ERROR_CHECK(nvs_flash_init());
@@ -36,5 +38,5 @@ void app_main()
 
    user_station_init();
    user_http_requser_init();
-   
+   user_mqtt_tcp();
 }

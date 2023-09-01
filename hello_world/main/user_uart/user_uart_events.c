@@ -24,7 +24,8 @@
 #include "user_station.h"
 #include "esp_wifi.h"
 #include "user_http_request.h"
-
+#include "cJSON.h"
+#include "user_mqtt_tcp.h"
 static const char *TAG = "uart_events";
 
 /**
@@ -68,7 +69,7 @@ static void uart_event_task(void *pvParameters)
                    // uart_write_bytes(EX_UART_NUM, (const char *) dtmp, event.size);
                     if((dtmp[0]==0x5A)&&(dtmp[1] == 0xA5)&&
                        (dtmp[3] == 0x5A)&&dtmp[4] == 0xA5)
-                    {
+                     {
                         switch (dtmp[2])
                         {
                         case 1:
@@ -91,11 +92,33 @@ static void uart_event_task(void *pvParameters)
                             break;
                             
                         default:
+                            printf("receive fail\r\n");
                             break;
                         }
                     
+                    }else if((dtmp[0]==0x5A)&&(dtmp[1] == 0xA5)&&
+                       (dtmp[7] == 0x5A)&&dtmp[8] == 0xA5)
+                       {
+                          ESP_LOGI(TAG,".....1");//输出字符串
+                          cJSON *TCP = cJSON_CreateObject();				//创建一个对象
+                          cJSON_AddStringToObject(TCP,"method","report");	//添加字符串 
+                          cJSON_AddStringToObject(TCP,"clientToken","123");	//添加字符串 
+                          cJSON_AddStringToObject(TCP,"timestamp","1212121221");	//添加字符串 
+                          cJSON *params = cJSON_CreateObject();				//创建一个对象
+                          cJSON_AddNumberToObject(params,"power_switch",dtmp[2]);	
+                          cJSON_AddNumberToObject(params,"Temperature",dtmp[3]);
+                          cJSON_AddNumberToObject(params,"mode",dtmp[4]);
+                          cJSON_AddNumberToObject(params,"current_humidity",dtmp[5]);
+                          cJSON_AddNumberToObject(params,"current_temp",dtmp[6]);
+                          cJSON_AddItemToObject(TCP,"params",params);
+                          char *json_data = cJSON_Print(TCP);				//JSON数据结构转换为JSON字符串
+	                      ESP_LOGI(TAG,"%s\n",json_data);						//输出字符串
+                          mqtt_send(json_data);
+	                      cJSON_free(json_data);							//释放空间
+	                      cJSON_Delete(TCP);								//清除结构体
+
                     }else{
-                     ESP_LOGI(TAG,"user_report_N");
+                       ESP_LOGI(TAG,"user_report_N");
                     }
                     break;
 
