@@ -26,10 +26,7 @@
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
-#define EXAMPLE_ESP_WIFI_SSID      "qwert1"
-#define EXAMPLE_ESP_WIFI_PASS      "a123456b"
-#define EXAMPLE_ESP_WIFI_SSID_2      "SYC123"
-#define EXAMPLE_ESP_WIFI_PASS_2      "a410401663"
+
 #define EXAMPLE_ESP_MAXIMUM_RETRY  5
 
 /* FreeRTOS event group to signal when we are connected*/
@@ -46,6 +43,9 @@ static const char *TAG = "wifi station";
 static int s_retry_num = 0;
 static int wifi_connect_sucess_flag=0;
 static int wifi_connect_inquiry=0;
+static uint8_t user_wifi_cut_mod = 0;
+static char * user_ssid;
+static char * user_passward;
 static void event_handler(void* arg, esp_event_base_t event_base,
                                 int32_t event_id, void* event_data)
 {
@@ -80,10 +80,22 @@ static void event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-uint8_t wifi_init_sta(wifi_config_t wifi_config)
+uint8_t wifi_init_sta()
 {
     s_wifi_event_group = xEventGroupCreate();
     uint8_t wifi_connect_flag = 0;
+  //  wifi_config_t wifi_config ;
+    wifi_config_t wifi_config = {
+        .sta = {
+
+        },
+    };
+    memset(wifi_config.sta.ssid,0x00,sizeof(wifi_config.sta.ssid));
+    memset(wifi_config.sta.password,0x00,sizeof(wifi_config.sta.password));
+    memcpy(wifi_config.sta.ssid,user_ssid,strlen(user_ssid));
+    memcpy(wifi_config.sta.password,user_passward,strlen(user_passward));
+    ESP_LOGE(TAG,"station ssid=%s",wifi_config.sta.ssid);
+    ESP_LOGE(TAG,"station passward=%s",wifi_config.sta.password);
     /* Setting a password implies station will connect to all security modes including WEP/WPA.
         * However these modes are deprecated and not advisable to be used. Incase your Access point
         * doesn't support WPA2, these mode can be enabled by commenting below line */
@@ -124,47 +136,28 @@ uint8_t wifi_init_sta(wifi_config_t wifi_config)
     return wifi_connect_flag;
 }
 void user_station_init()
-{
+{   
+    while(!user_wifi_cut_mod)
+    {
+         vTaskDelay(1);
+    }
+    ESP_LOGI(TAG, "start station mode");
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &event_handler, NULL));
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &event_handler, NULL));
     ESP_LOGI(TAG, "ESP_WIFI_MODE_STA");
     tcpip_adapter_init();
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
-    user_wifi_connect_funtion();
+    ESP_ERROR_CHECK(esp_wifi_stop());
+    ESP_LOGI(TAG, " esp_wifi_init");
+    wifi_init_sta();
 }
-
-void user_wifi_connect_funtion()
+void user_wifi_cut_station()
+{
+   user_wifi_cut_mod = 1;
+}
+void user_wifi_connect_funtion(char * ssid,char * passward)
 {   
-  wifi_config_t wifi_config = {
-        .sta = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID,
-            .password = EXAMPLE_ESP_WIFI_PASS
-        },
-    };
-
-  wifi_config_t wifi_config_2 = {
-        .sta = {
-            .ssid = EXAMPLE_ESP_WIFI_SSID_2,
-            .password = EXAMPLE_ESP_WIFI_PASS_2
-        },
-    };
-ESP_LOGI(TAG, "wifi connect by company");
-if(wifi_init_sta(wifi_config))
-   {
-    wifi_connect_sucess_flag = 1;
-   }else{
-     ESP_LOGI(TAG, "wifi connect_funtion restore");
-     esp_wifi_restore();   
-     ESP_LOGI(TAG, "wifi connect by myself");                  
-     if (wifi_init_sta(wifi_config_2))
-     {
-     wifi_connect_sucess_flag = 1;
-     }else{ 
-      esp_wifi_restore();
-      user_wifi_connect_funtion();
-     }
-   }   
+    user_ssid =   ssid;
+    user_passward =    passward;
 }
 int wifi_state_inquiry()
 {

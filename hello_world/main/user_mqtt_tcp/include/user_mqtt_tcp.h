@@ -3,4 +3,5 @@
 
 void user_mqtt_tcp(void);
 void mqtt_send(char * jsondata);
+void get_user_token(char * token);
 #endif

@@ -33,6 +33,7 @@
 #include "driver/uart.h"
 #include "user_mqtt_tcp.h"
 static const char *TAG = "MQTT_EXAMPLE";
+static char * user_token;
  esp_mqtt_client_handle_t client;
 
 static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
@@ -44,17 +45,11 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
     switch (event->event_id) {
         case MQTT_EVENT_CONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_CONNECTED");
-         //   msg_id = esp_mqtt_client_publish(client, "/topic/qos1", "data_3", 0, 1, 0);
-         //   ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+            msg_id = esp_mqtt_client_subscribe(client, "$thing/down/service/HDP55DKC4K/device_2", 0);
+            ESP_LOGI(TAG, "sent subscribe service successful, msg_id=%d", msg_id);
 
             msg_id = esp_mqtt_client_subscribe(client, "$thing/down/property/HDP55DKC4K/device_2", 0);
-            ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-          //  msg_id = esp_mqtt_client_subscribe(client, "/topic/qos1", 1);
-          //  ESP_LOGI(TAG, "sent subscribe successful, msg_id=%d", msg_id);
-
-           // msg_id = esp_mqtt_client_unsubscribe(client, "/topic/qos1");
-           // ESP_LOGI(TAG, "sent unsubscribe successful, msg_id=%d", msg_id);
+            ESP_LOGI(TAG, "sent subscribe property successful, msg_id=%d", msg_id);
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
@@ -62,14 +57,27 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
 
         case MQTT_EVENT_SUBSCRIBED:
             ESP_LOGI(TAG, "MQTT_EVENT_SUBSCRIBED, msg_id=%d", event->msg_id);
-            msg_id = esp_mqtt_client_publish(client, "/topic/qos0", "data", 0, 0, 0);
+            cJSON *token = cJSON_CreateObject();				//创建一个对象
+            cJSON_AddStringToObject(token,"method","app_bind_token");	//添加字符串 
+            cJSON_AddStringToObject(token,"clientToken","client-1234");	//添加字符串 
+            cJSON *params = cJSON_CreateObject();				//创建一个对象
+            cJSON_AddStringToObject(params,"token",user_token);	        
+            cJSON_AddItemToObject(token,"params",params);
+            char *json_data = cJSON_Print(token);				//JSON数据结构转换为JSON字符串
+	        ESP_LOGI(TAG,"%s\n",json_data);						//输出字符串
+            int msg_id;
+            msg_id = esp_mqtt_client_publish(client, "$thing/up/service/HDP55DKC4K/device_2", json_data, 0, 1, 0);
             ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+	        cJSON_free(json_data);							//释放空间
+	        cJSON_Delete(token);								//清除结构体
             break;
         case MQTT_EVENT_UNSUBSCRIBED:
             ESP_LOGI(TAG, "MQTT_EVENT_UNSUBSCRIBED, msg_id=%d", event->msg_id);
             break;
         case MQTT_EVENT_PUBLISHED:
+          
             ESP_LOGI(TAG, "MQTT_EVENT_PUBLISHED, msg_id=%d", event->msg_id);
+          
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
@@ -84,21 +92,40 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
                              ESP_LOGI(TAG,".....params JSON数据收到\r\n");
                              cJSON * Temperature = cJSON_GetObjectItem(params,"Temperature");
                              cJSON * mode = cJSON_GetObjectItem(params,"mode");
-                             cJSON * current_temp = cJSON_GetObjectItem(params,"current_temp");
-                             cJSON * current_humidity = cJSON_GetObjectItem(params,"current_humidity");
                              cJSON * power_switch = cJSON_GetObjectItem(params,"power_switch");
-                             if (Temperature && mode && current_temp && current_humidity && power_switch)
+                             if (Temperature)
                              {
                               ESP_LOGI(TAG,"..... JSON全部解析\r\n");
                               user_ctrol[0]=0x5A;
                               user_ctrol[1]=0xA5;
                               user_ctrol[2]=(char)(Temperature->valueint);
-                              user_ctrol[3]=(char)(mode->valueint);
+                              user_ctrol[3]=0x00;
+                              user_ctrol[4]=0x00;
+                              user_ctrol[5]=0x5A;
+                              user_ctrol[6]=0xA5;  
+                              uart_write_bytes(UART_NUM_0,user_ctrol,7);
+                             }else if (mode)
+                             {
+                              ESP_LOGI(TAG,"..... JSON全部解析\r\n");
+                              user_ctrol[0]=0x5A;
+                              user_ctrol[1]=0xA5;
+                              user_ctrol[2]=0x00;
+                              user_ctrol[3]=(char)(mode->valueint);;
+                              user_ctrol[4]=0x00;
+                              user_ctrol[5]=0x5A;
+                              user_ctrol[6]=0xA5;  
+                              uart_write_bytes(UART_NUM_0,user_ctrol,7);
+                             }else if (power_switch)
+                             {
+                              ESP_LOGI(TAG,"..... JSON全部解析\r\n");
+                              user_ctrol[0]=0x5A;
+                              user_ctrol[1]=0xA5;
+                              user_ctrol[2]=0x00;
+                              user_ctrol[3]=0x00;
                               user_ctrol[4]=(char)(power_switch->valueint);
                               user_ctrol[5]=0x5A;
                               user_ctrol[6]=0xA5;  
                               uart_write_bytes(UART_NUM_0,user_ctrol,7);
-                            //  uart_write_bytes
                              }  
                         } 
                    }
@@ -193,4 +220,9 @@ void mqtt_send(char * jsondata)
      int msg_id;
      msg_id = esp_mqtt_client_publish(client, "$thing/up/property/HDP55DKC4K/device_2", jsondata, 0, 1, 0);
      ESP_LOGI(TAG, "sent publish successful, msg_id=%d", msg_id);
+}
+void get_user_token(char * token)
+{
+   user_token =token;
+
 }
