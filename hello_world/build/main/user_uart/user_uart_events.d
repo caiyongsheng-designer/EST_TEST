@@ -73,7 +73,8 @@ user_uart/user_uart_events.o: \
  C:/msys32/home/admin/esp/components/lwip/include/apps/dhcpserver/dhcpserver.h \
  C:/8266/EST_TEST/hello_world/main/user_http_request/include/user_http_request.h \
  C:/msys32/home/admin/esp/components/json/cJSON/cJSON.h \
- C:/8266/EST_TEST/hello_world/main/user_mqtt_tcp/include/user_mqtt_tcp.h
+ C:/8266/EST_TEST/hello_world/main/user_mqtt_tcp/include/user_mqtt_tcp.h \
+ C:/8266/EST_TEST/hello_world/main/user_udp_sever/include/udp_server.h
 
 C:/msys32/home/admin/esp/components/freertos/include/freertos/FreeRTOS.h:
 
@@ -222,4 +223,6 @@ C:/8266/EST_TEST/hello_world/main/user_http_request/include/user_http_request.h:
 C:/msys32/home/admin/esp/components/json/cJSON/cJSON.h:
 
 C:/8266/EST_TEST/hello_world/main/user_mqtt_tcp/include/user_mqtt_tcp.h:
+
+C:/8266/EST_TEST/hello_world/main/user_udp_sever/include/udp_server.h:
 /c/8266/EST_TEST/hello_world/main/user_uart/user_uart_events.c:

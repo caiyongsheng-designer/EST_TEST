@@ -52,8 +52,8 @@ void wifi_init_softap()
   //  ESP_ERROR_CHECK(esp_event_loop_create_default());
     s_wifi_event_soft_flag = xEventGroupCreate();
      xEventGroupSetBits(s_wifi_event_soft_flag, 0);
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+    //wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    //ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     ESP_ERROR_CHECK(esp_event_handler_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL));
     wifi_config_t wifi_config = {
         .ap = {

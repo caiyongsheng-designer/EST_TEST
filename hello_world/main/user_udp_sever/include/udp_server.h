@@ -5,8 +5,8 @@
 typedef struct WIFI_STRO
 {
   int32_t wifi_stro_flag;
-  char *  save_wifi_ssid;
-  char *  save_wifi_passward;
+  char  save_wifi_ssid[32];
+  char  save_wifi_passward[64];
 }wifi_stro;
 void udp_server();
 wifi_stro * nvs_read_data_from_flash(void);

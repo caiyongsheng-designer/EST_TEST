@@ -74,7 +74,12 @@ hello_world_main.o: C:/8266/EST_TEST/hello_world/main/hello_world_main.c \
  C:/8266/EST_TEST/hello_world/main/user_uart/include/user_uart.h \
  C:/8266/EST_TEST/hello_world/main/user_mqtt_tcp/include/user_mqtt_tcp.h \
  C:/8266/EST_TEST/hello_world/main/utils/include/utils_3Y.h \
- C:/8266/EST_TEST/hello_world/main/user_softAP/include/user_soft_ap.h
+ C:/8266/EST_TEST/hello_world/main/user_softAP/include/user_soft_ap.h \
+ C:/8266/EST_TEST/hello_world/main/user_udp_sever/include/udp_server.h \
+ C:/msys32/home/admin/esp/components/esp8266/include/esp_wifi.h \
+ C:/msys32/home/admin/esp/components/esp8266/include/esp_wifi_types.h \
+ C:/msys32/home/admin/esp/components/log/include/esp_log.h \
+ C:/msys32/home/admin/esp/components/log/include/esp_log_internal.h
 
 C:/msys32/home/admin/esp/components/freertos/include/freertos/FreeRTOS.h:
 
@@ -227,4 +232,14 @@ C:/8266/EST_TEST/hello_world/main/user_mqtt_tcp/include/user_mqtt_tcp.h:
 C:/8266/EST_TEST/hello_world/main/utils/include/utils_3Y.h:
 
 C:/8266/EST_TEST/hello_world/main/user_softAP/include/user_soft_ap.h:
+
+C:/8266/EST_TEST/hello_world/main/user_udp_sever/include/udp_server.h:
+
+C:/msys32/home/admin/esp/components/esp8266/include/esp_wifi.h:
+
+C:/msys32/home/admin/esp/components/esp8266/include/esp_wifi_types.h:
+
+C:/msys32/home/admin/esp/components/log/include/esp_log.h:
+
+C:/msys32/home/admin/esp/components/log/include/esp_log_internal.h:
 /c/8266/EST_TEST/hello_world/main/./hello_world_main.c:

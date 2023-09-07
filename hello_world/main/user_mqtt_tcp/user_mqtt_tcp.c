@@ -81,8 +81,8 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DATA:
             ESP_LOGI(TAG, "MQTT_EVENT_DATA");
-            printf("TOPIC=%.*s\r\n", event->topic_len, event->topic);
-            printf("DATA=%.*s\r\n", event->data_len, event->data);
+            ESP_LOGI(TAG,"TOPIC=%.*s\r\n", event->topic_len, event->topic);
+            ESP_LOGI(TAG,"DATA=%.*s\r\n", event->data_len, event->data);
              cJSON * pJsonRoot = cJSON_Parse((const char*)event->data);   //判断是否为json字符
                 if (pJsonRoot !=NULL)
                    {
@@ -98,34 +98,31 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
                               ESP_LOGI(TAG,"..... JSON全部解析\r\n");
                               user_ctrol[0]=0x5A;
                               user_ctrol[1]=0xA5;
-                              user_ctrol[2]=(char)(Temperature->valueint);
-                              user_ctrol[3]=0x00;
-                              user_ctrol[4]=0x00;
-                              user_ctrol[5]=0x5A;
-                              user_ctrol[6]=0xA5;  
-                              uart_write_bytes(UART_NUM_0,user_ctrol,7);
+                              user_ctrol[2]=0x01;
+                              user_ctrol[3]=(char)(Temperature->valueint);
+                              user_ctrol[4]=0xFF;
+                              user_ctrol[5]=0xFF;  
+                              uart_write_bytes(UART_NUM_0,user_ctrol,6);
                              }else if (mode)
                              {
                               ESP_LOGI(TAG,"..... JSON全部解析\r\n");
                               user_ctrol[0]=0x5A;
                               user_ctrol[1]=0xA5;
-                              user_ctrol[2]=0x00;
-                              user_ctrol[3]=(char)(mode->valueint);;
-                              user_ctrol[4]=0x00;
-                              user_ctrol[5]=0x5A;
-                              user_ctrol[6]=0xA5;  
-                              uart_write_bytes(UART_NUM_0,user_ctrol,7);
+                              user_ctrol[2]=0x02;
+                              user_ctrol[3]=(char)(mode->valueint);
+                              user_ctrol[4]=0xFF;
+                              user_ctrol[5]=0xFF;  
+                              uart_write_bytes(UART_NUM_0,user_ctrol,6);
                              }else if (power_switch)
                              {
                               ESP_LOGI(TAG,"..... JSON全部解析\r\n");
                               user_ctrol[0]=0x5A;
                               user_ctrol[1]=0xA5;
-                              user_ctrol[2]=0x00;
-                              user_ctrol[3]=0x00;
-                              user_ctrol[4]=(char)(power_switch->valueint);
-                              user_ctrol[5]=0x5A;
-                              user_ctrol[6]=0xA5;  
-                              uart_write_bytes(UART_NUM_0,user_ctrol,7);
+                              user_ctrol[2]=0x03;
+                              user_ctrol[3]=(char)(power_switch->valueint);
+                              user_ctrol[4]=0xFF;
+                              user_ctrol[5]=0xFF;  
+                              uart_write_bytes(UART_NUM_0,user_ctrol,6);
                              }  
                         } 
                    }

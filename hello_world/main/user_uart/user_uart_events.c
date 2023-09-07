@@ -26,6 +26,7 @@
 #include "user_http_request.h"
 #include "cJSON.h"
 #include "user_mqtt_tcp.h"
+#include "udp_server.h"
 static const char *TAG = "uart_events";
 
 /**
@@ -50,6 +51,7 @@ static QueueHandle_t uart0_queue;
 static void uart_event_task(void *pvParameters)
 {
     uart_event_t event;
+    char user_command[6] ={0};
     uint8_t *dtmp = (uint8_t *) malloc(RD_BUF_SIZE);
 
     for (;;) {
@@ -90,7 +92,18 @@ static void uart_event_task(void *pvParameters)
                                 printf("Connect fail\r\n");
                              }
                             break;
-                            
+                        case 3:                     
+                             nvs_write_data_to_flash(0,"","");
+                             user_command[0]=0x5A;
+                             user_command[1]=0xA5;
+                             user_command[2]=0xFF;
+                             user_command[3]=0xFF;
+                             user_command[4]=0xFF;
+                             user_command[5]=0xFF;
+                             uart_write_bytes(UART_NUM_0,user_command,6);
+                             vTaskDelay(200/portTICK_PERIOD_MS);
+                             esp_restart();
+                            break;  
                         default:
                             printf("receive fail\r\n");
                             break;

@@ -28,8 +28,9 @@
 #include "esp_wifi.h"
 #include "udp_server.h"
 #define PORT 8266
+#define NVS_CUSTOMER  "customer data"
 static const char *TAG = "example";
-
+static uint8_t user_wifi_cut_mod = 0;
 static void udp_server_task(void *pvParameters)
 {
     char rx_buffer[128];
@@ -114,11 +115,12 @@ static void udp_server_task(void *pvParameters)
                             }
 	                      cJSON_free(json_data);							//释放空间
 	                      cJSON_Delete(UDP_TX);								//清除结构体  
-                          user_wifi_connect_funtion(ssid->valuestring,password->valuestring);
+                          nvs_write_data_to_flash(1,ssid->valuestring,password->valuestring);
                           get_user_token(token->valuestring);
                           shutdown(sock, 0);
-                          close(sock);
-                          user_wifi_cut_station();  
+                          close(sock); 
+                          ESP_ERROR_CHECK(esp_wifi_stop());
+                          user_wifi_cut_mod = 1;
                           vTaskDelete(NULL);
                            
                         } 
@@ -140,24 +142,27 @@ void udp_server()
  //   ESP_ERROR_CHECK(nvs_flash_init());
     ESP_ERROR_CHECK(esp_netif_init());
   //  ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-// ESP_ERROR_CHECK(example_connect());
+    // ESP_ERROR_CHECK(example_connect());
     xTaskCreate(udp_server_task, "udp_server", 4096, NULL, 5, NULL);
+     while(!user_wifi_cut_mod)
+    {
+         vTaskDelay(1);
+    }
 }
 wifi_stro * nvs_read_data_from_flash(void)
 {
+    
     nvs_handle handle;
     wifi_stro * wifi_stro1 = (wifi_stro*)malloc(sizeof(wifi_stro));
-    static const char *NVS_CUSTOMER = "customer data";
     static const char *DATA1 = "param 1";
     static const char *DATA2 = "param 2";
     static const char *DATA3 = "param 3";
-    uint32_t str_length_ssid = 32;
-    uint32_t str_length_passward = 64;
+    uint32_t str_length = 32;
+    uint32_t str_length1 = 64;
     ESP_ERROR_CHECK( nvs_open(NVS_CUSTOMER, NVS_READWRITE, &handle) );
     ESP_ERROR_CHECK ( nvs_get_i32(handle, DATA1, &(wifi_stro1->wifi_stro_flag)));
-    ESP_ERROR_CHECK ( nvs_get_str(handle, DATA2, wifi_stro1->save_wifi_ssid,&str_length_ssid));
-    ESP_ERROR_CHECK ( nvs_get_str(handle, DATA3, wifi_stro1->save_wifi_passward,&str_length_passward));
+    ESP_ERROR_CHECK ( nvs_get_str(handle, DATA2, wifi_stro1->save_wifi_ssid,&str_length));
+    ESP_ERROR_CHECK ( nvs_get_str(handle, DATA3, wifi_stro1->save_wifi_passward,&str_length1));
     printf("[data1]: ssid:%s passwd:%s flag:%d\r\n", wifi_stro1->save_wifi_ssid,wifi_stro1->save_wifi_passward,wifi_stro1->wifi_stro_flag);
     nvs_close(handle);
     return wifi_stro1;
@@ -165,7 +170,6 @@ wifi_stro * nvs_read_data_from_flash(void)
 void nvs_write_data_to_flash(int32_t param1,char * param2,char * param3)
 {
     nvs_handle handle;
-    static const char *NVS_CUSTOMER = "customer data";
     static const char *DATA1 = "param 1";
     static const char *DATA2 = "param 2";
     static const char *DATA3 = "param 3";
@@ -174,6 +178,7 @@ void nvs_write_data_to_flash(int32_t param1,char * param2,char * param3)
     ESP_ERROR_CHECK( nvs_set_str( handle, DATA2, param2) );
     ESP_ERROR_CHECK( nvs_set_str( handle, DATA3, param3) );
     ESP_ERROR_CHECK( nvs_commit(handle) );
+    ESP_LOGI(TAG,"nvs_close");
     nvs_close(handle);
 }
 
