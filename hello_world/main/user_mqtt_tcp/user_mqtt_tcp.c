@@ -53,6 +53,8 @@ static esp_err_t mqtt_event_handler_cb(esp_mqtt_event_handle_t event)
             break;
         case MQTT_EVENT_DISCONNECTED:
             ESP_LOGI(TAG, "MQTT_EVENT_DISCONNECTED");
+            esp_mqtt_client_start(client);
+            ESP_LOGI(TAG, "MQTT_connect_replay");
             break;
 
         case MQTT_EVENT_SUBSCRIBED:
@@ -183,7 +185,7 @@ static void mqtt_app_start(void)
   /*  esp_mqtt_client_handle_t*/ client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(client, ESP_EVENT_ANY_ID, mqtt_event_handler, client);
     esp_mqtt_client_start(client);
-    free(sanyuan2);
+   // free(sanyuan2);
 }
 
 void user_mqtt_tcp(void)

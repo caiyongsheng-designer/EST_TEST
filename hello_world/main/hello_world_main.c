@@ -31,6 +31,7 @@ void app_main()
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
     user_uart_app();
+   // nvs_write_data_to_flash(0,"","");
     wifi_stro * wifi_stro1 = nvs_read_data_from_flash();
   //  printf("Hello world!\n");
     /* Print chip information */
